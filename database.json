@@ -1,0 +1,18 @@
+{
+    "dev":{
+        "driver":"pg",
+        "host":"127.0.0.1",
+        "database":"SWAPI",
+        "user":"Admin",
+        "password":"Admin",
+        "port":5432
+    },
+    "test":{
+        "driver":"pg",
+        "host":"127.0.0.1",
+        "database":"SWAPI_TEST",
+        "user":"Admin",
+        "password":"Admin",
+        "port":5433
+    }
+}

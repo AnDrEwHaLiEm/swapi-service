@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+      
+  db:
+    image: postgres:latest
+    container_name: SWAPI_DB
+    environment:
+      POSTGRES_USER: Admin
+      POSTGRES_PASSWORD: Admin
+      POSTGRES_DB: SWAPI
+    ports:
+      - "5432:5432"
+ 
+  db_test:
+    image: postgres:latest
+    container_name: SWAPI_TEST_DB
+    environment:
+      POSTGRES_USER: Admin
+      POSTGRES_PASSWORD: Admin
+      POSTGRES_DB: SWAPI_TEST
+    ports:
+      - "5433:5432"
+  
+  app:
+    image: my-node-app
+    ports:
+      - "3000:3000"
+    command: sh -c "sleep 12 && yarn start"
+
+  db-migrate:
+    image: my-node-app
+    depends_on:
+      - db
+      - db_test
+    volumes:
+      - ./migrations:/app/dist/migrations 
+    environment:
+      - DATABASE_URL=postgres://Admin:Admin@db:5432/SWAPI 
+      - DATABASE_TEST_URL=postgres://Admin:Admin@db_test:5433/SWAPI_TEST 
+    command: sh -c "sleep 10 && db-migrate up"
+  
+  redis:
+    image: redis:latest
+    container_name: my_redis_cache
+    ports:
+      - "6379:6379"
+  
