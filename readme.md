@@ -38,7 +38,7 @@ Follow these steps to run the SWAPI service:
 
 1. Start the Docker containers:
    ```
-   npm run start:docker
+   yarn run start:docker
    ```
 
 2. Access the SWAPI service:
