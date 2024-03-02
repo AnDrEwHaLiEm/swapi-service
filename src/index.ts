@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { Request, Response } from 'express';
 import cors from 'cors';
 
 
@@ -15,6 +15,11 @@ app.use(express.json());
 app.use(cors());
 
 app.use(checkRequest);
+
+app.get('/', (_req: Request, res: Response) => {
+    return res.json('hello world!');
+})
+
 app.use('/films', filmRouter);
 app.use('/people', peopleRouter);
 

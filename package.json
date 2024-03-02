@@ -4,13 +4,15 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start:docker":"docker build -t my-node-app . && docker-compose up -d", 
     "build": "npx tsc",
     "start": "node dist/src/index.js",
     "dev": "nodemon src/index.ts",
-    "jasmine": "jasmine",
     "migrate": "db-migrate up",
-    "test": "npm run build && ENV=test npm run jasmine"
+    "test": "jasmine",
+    "build:docker":"docker build -t my-node-app .",
+    "start:docker":"docker-compose up -d",
+    "stop:service":"docker-compose down",
+    "test:docker":"docker-compose -f docker-compose-test.yml run test_app npm run test && docker-compose -f docker-compose-test.yml down --remove-orphans"
   },
   "keywords": [],
   "author": "",

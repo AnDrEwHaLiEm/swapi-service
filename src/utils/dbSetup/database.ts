@@ -9,8 +9,7 @@ const {
     POSTGRES_DB,
     POSTGRES_USER,
     POSTGRES_PASSWORD,
-    POSTGRES_TEST_DB,
-    ENV,
+    POSTGRES_PORT
 } = process.env;
 
 class DbSetup {
@@ -19,9 +18,9 @@ class DbSetup {
         this.client = new Client({
             user: POSTGRES_USER,
             host: POSTGRES_HOST,
-            database: ENV === 'test' ? POSTGRES_TEST_DB : POSTGRES_DB,
+            database: POSTGRES_DB,
             password: POSTGRES_PASSWORD,
-            port: ENV === 'test' ? 5433 : 5432,
+            port: parseInt(POSTGRES_PORT as string)
         });
     }
 

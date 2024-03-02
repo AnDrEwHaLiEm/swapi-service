@@ -8,7 +8,7 @@ class AxiosService {
     constructor() {
         this.instance = axios.create({
             baseURL: SWAPI_BASE_URL,
-            timeout: 10000,
+            timeout: 50000,
             headers: {
                 'Content-Type': 'application/json',
             },

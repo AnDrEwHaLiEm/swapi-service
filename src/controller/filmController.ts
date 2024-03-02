@@ -32,23 +32,22 @@ class FilmController {
             const savedFilmsTitles = await redisClient.get('movies:title');
 
             if (savedFilmsTitles && savedFilmsTitles.length === filmsTitle.length) {
-                const newFilms: Array<string> = [];;
+                const newFilms: Array<string> = [];
                 const unSavedFilmsTitles: Array<string> = filmsTitle.filter((film) => !savedFilmsTitles.includes(film));
                 await Promise.all(films.results.map(async (item: IFilmSchema) => {
                     if (unSavedFilmsTitles.includes(item.title)) {
                         if (await filmService.saveFilm(item)) {
-                            loggerHandler.infoLogger(`Film ${item.title} saved`);
                             newFilms.push(item.title);
                         }
                         else {
-                            loggerHandler.errorLogger(`Error in save film ${item.title}`, new Error('Error in save film'));
+                            unSavedFilmsTitles.push(item.title);
                         }
-                    }
-                    else {
-                        loggerHandler.infoLogger(`Film ${item.title} already saved`);
                     }
                 }
                 ));
+                loggerHandler.infoLogger(`new movies saved : ${newFilms}`);
+                loggerHandler.infoLogger(`previous movies : ${savedFilmsTitles}`);
+                loggerHandler.infoLogger(`error when save : ${unSavedFilmsTitles}`);
                 await redisClient.set('movies:title', JSON.stringify([...savedFilmsTitles, ...newFilms]));
                 res.status(200).json({ newFilms, savedFilmsTitles, unSavedFilmsTitles });
             }
@@ -57,14 +56,15 @@ class FilmController {
                 const unSavedFilmsTitles: Array<string> = [];
                 await Promise.all(films.results.map(async (item: IFilmSchema) => {
                     if (await filmService.saveFilm(item)) {
-                        loggerHandler.infoLogger(`Film ${item.title} saved`);
                         newFilms.push(item.title);
                     }
                     else {
-                        loggerHandler.errorLogger(`Error in save film ${item.title}`, new Error('Error in save film'));
                         unSavedFilmsTitles.push(item.title);
                     }
                 }))
+                loggerHandler.infoLogger(`new movies saved : ${newFilms}`);
+                loggerHandler.infoLogger(`previous movies : ${savedFilmsTitles}`);
+                loggerHandler.infoLogger(`error when save : ${unSavedFilmsTitles}`);
                 await redisClient.set('movies:title', JSON.stringify(newFilms));
                 res.status(200).json({ newFilms, savedFilmsTitles, unSavedFilmsTitles });
             }

@@ -1,10 +1,10 @@
 version: '3.8'
 
 services:
-      
-  db:
+  
+  db_test:
     image: postgres:latest
-    container_name: SWAPI_DB
+    container_name: SWAPI_TEST_DB
     environment:
       POSTGRES_USER: Admin
       POSTGRES_PASSWORD: Admin
@@ -17,30 +17,36 @@ services:
       timeout: 5s
       retries: 5
 
-  redis:
+  redis_test:
     image: redis:latest
-    container_name: my_redis_cache
+    container_name: my_redis_cache_test
     ports:
-      - "6379:6379"
+      - "6380:6380"
+    command: redis-server --port 6380
+    
   
-  db_migrate:
+  db_migrate_test:
     image: my-node-app
     depends_on:
-      db:
+      db_test:
         condition: service_healthy
     volumes:
       - ./migrations:/app/dist/migrations 
     environment:
-      - DATABASE_URL=postgres://Admin:Admin@db:5432/SWAPI 
-    command: db-migrate up    
- 
-  app:
+      - DATABASE_URL=postgres://Admin:Admin@db_test:5432/SWAPI 
+    command: db-migrate up
+
+  test_app:
     image: my-node-app
-    ports:
-      - "3000:3000"
     depends_on:
-      - db_migrate
-      - redis
+      - db_migrate_test
+      - redis_test
     environment:
-      - ENV=dev
-    command: yarn start
+      - ENV=test
+      - REDIS_HOST=redis_test
+      - POSTGRES_HOST=db_test
+      - POSTGRES_PORT=5432
+      - REDIS_PORT=6380
+      - PORT=4000
+    ports:
+      - "4000:4000"
